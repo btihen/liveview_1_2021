@@ -1,12 +1,21 @@
 defmodule MemzWeb.GameLive do
   use MemzWeb, :live_view
-  alias Memz.Game
+  # alias Memz.Game
   alias Memz.Library
 
   def mount(%{"name" => name}, _session, socket) do
     passage = Library.find_passage_by_name(name)
-    socket = assign(socket, passage: passage)
-    {:ok, socket}
+
+    # override steps stored in DB - make memorize steps dependent on text length
+    steps = ceil(String.length(passage.text) / 15)
+    steps = cond do
+      steps > 10 -> 10
+      true       -> steps
+    end
+    passage = %{passage | steps: steps}
+
+    # socket = assign(socket, passage: passage)
+    {:ok, assign(socket, passage: passage)}
   end
 
   def render(assigns) do

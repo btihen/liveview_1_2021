@@ -6,22 +6,24 @@ defmodule MemzWeb.EraserComponent do
     steps_total = assigns.passage.steps
     paragraph = assigns.passage.text
 
-    {:ok,
-     assign(socket,
-       game: Game.new(steps_total, paragraph)
-     )}
+    {:ok, assign(socket, game: Game.new(steps_total, paragraph))}
   end
 
   def render(assigns) do
     ~L"""
     <pre><%= @game.paragraph %></pre>
     <h2>
-     Memorize text in <%= @game.steps_total %> steps
+      Memorize text in <%= @game.steps_total %> steps
     </h2>
-    <button phx-click="erase" phx-target="<%= @myself %>">=
+    <button phx-click="erase" phx-target="<%= @myself %>">
       Erase
     </button>
     """
+  end
+
+  # when there is no plan, then choose a new challenge
+  def handle_event("erase", _, %{assigns: %{game: %{plan: []}}} = socket) do
+    {:noreply, push_redirect(socket, to: "/game/choose")}
   end
 
   def handle_event("erase", _, socket) do

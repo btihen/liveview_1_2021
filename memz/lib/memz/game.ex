@@ -4,7 +4,7 @@ defmodule Memz.Game do
   def new(steps, paragraph, shuffle \\ true) do
     chunk = ceil(String.length(paragraph) / steps)
     plan = build_plan(shuffle, paragraph, chunk)
-    %__MODULE__{paragraph: paragraph, plan: plan}
+    %__MODULE__{steps_total: steps, plan: plan, paragraph: paragraph}
   end
 
   defp build_plan(shuffle, paragraph, chunk) do
@@ -19,6 +19,11 @@ defmodule Memz.Game do
 
   defp maybe_shuffle(list, false) do
     list
+  end
+
+  # return as is when there is no plan
+  def erase(%{plan: []} = game) do
+    game
   end
 
   def erase(%{plan: [current | plan], paragraph: paragraph} = game) do
