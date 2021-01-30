@@ -50,10 +50,7 @@ defmodule MemzWeb.PickerLive do
 
   defp next_passage_name(socket) do
     [first | rest] = socket.assigns.passage_names
-    assign(socket,
-              current_name: first,
-              passage_names: rest ++ [first]
-            )
+    assign(socket, current_name: first, passage_names: rest ++ [first])
   end
 
   defp passage_lookup(socket) do
