@@ -9,8 +9,8 @@ defmodule MemzWeb.PickerLive do
     {
       :ok,
       socket
-      |> assign(:all, passage_names)
-      |> start_from_beginning()
+      |> assign(:passage_names, passage_names)
+      |> next_passage_name()
       |> passage_lookup()
     }
   end
@@ -39,7 +39,7 @@ defmodule MemzWeb.PickerLive do
     {
       :noreply,
       socket
-      |> next_passage()
+      |> next_passage_name()
       |> passage_lookup()
     }
   end
@@ -48,22 +48,16 @@ defmodule MemzWeb.PickerLive do
     {:noreply, push_redirect(socket, to: "/game/play/#{socket.assigns.current_name}")}
   end
 
-
-  defp next_passage(%{assigns: %{passage_names: []}} = socket) do
-        start_from_beginning(socket)
+  defp next_passage_name(socket) do
+    [first | rest] = socket.assigns.passage_names
+    assign(socket,
+              current_name: first,
+              passage_names: rest ++ [first]
+            )
   end
-
-  defp next_passage(%{assigns: %{passage_names: [current_name | rest]}} = socket) do
-        assign(socket, current_name: current_name, passage_names: rest)
-    end
 
   defp passage_lookup(socket) do
     passage = Library.find_passage_by_name(socket.assigns.current_name)
     assign(socket, passage: passage)
-  end
-
-  defp start_from_beginning(socket) do
-    [first | rest] = socket.assigns.all
-    assign(socket, current_name: first, passage_names: rest)
   end
 end
